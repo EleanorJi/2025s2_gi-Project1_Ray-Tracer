@@ -84,7 +84,14 @@ namespace RayTracer
         /// <param name="time">Time since start in seconds</param>
         public void Render(Image outputImage, double time = 0)
         {
-            // Begin writing your code here...
+            for (int y = 0; y < outputImage.Height; y++)
+            {
+                for (int x = 0; x < outputImage.Width; x++)
+                {
+                    Color pixelColor = new Color(1, 1, 1);
+                    outputImage.SetPixel(x, y, pixelColor);
+                }
+            }
         }
     }
 }
