@@ -43,8 +43,7 @@ namespace RayTracer
         /// <returns>Length of the vector squared</returns>
         public double LengthSq()
         {
-            // Write your code here...
-            return 0;
+            return x * x + y * y + z * z;
         }
 
         /// <summary>
@@ -53,8 +52,7 @@ namespace RayTracer
         /// <returns>Length of the vector</returns>
         public double Length()
         {
-            // Write your code here...
-            return 0;
+            return Math.Sqrt(LengthSq());
         }
 
         /// <summary>
@@ -63,8 +61,12 @@ namespace RayTracer
         /// <returns>Normalized vector</returns>
         public Vector3 Normalized()
         {
-            // Write your code here...
-            return new Vector3(0, 0, 0);
+            double len = Length();
+            if (len == 0)
+            {
+                return new Vector3(0, 0, 0);
+            }
+            return this / len;
         }
 
         /// <summary>
@@ -74,8 +76,7 @@ namespace RayTracer
         /// <returns>Dot product result</returns>
         public double Dot(Vector3 with)
         {
-            // Write your code here...
-            return 0;
+            return x * with.X + y * with.Y + z * with.Z;
         }
 
         /// <summary>
@@ -85,8 +86,11 @@ namespace RayTracer
         /// <returns>Cross product result</returns>
         public Vector3 Cross(Vector3 with)
         {
-            // Write your code here...
-            return new Vector3(0, 0, 0);
+            double cross_x = y * with.Z - z * with.Y;
+            double cross_y = z * with.X - x * with.Z;
+            double cross_z = x * with.Y - y * with.X;
+
+            return new Vector3(cross_x, cross_y, cross_z);
         }
 
         /// <summary>
@@ -97,8 +101,7 @@ namespace RayTracer
         /// <returns>Summed vector</returns>
         public static Vector3 operator +(Vector3 a, Vector3 b)
         {
-            // Write your code here...
-            return new Vector3(0, 0, 0);
+            return new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
         }
 
         /// <summary>
@@ -108,8 +111,7 @@ namespace RayTracer
         /// <returns>Negated vector</returns>
         public static Vector3 operator -(Vector3 a)
         {
-            // Write your code here...
-            return new Vector3(0, 0, 0);
+            return new Vector3(-a.X, -a.Y, -a.Z);
         }
 
         /// <summary>
@@ -120,8 +122,7 @@ namespace RayTracer
         /// <returns>Subtracted vector</returns>
         public static Vector3 operator -(Vector3 a, Vector3 b)
         {
-            // Write your code here...
-            return new Vector3(0, 0, 0);
+            return new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
         }
 
         /// <summary>
@@ -132,8 +133,7 @@ namespace RayTracer
         /// <returns>Multiplied vector</returns>
         public static Vector3 operator *(Vector3 a, double b)
         {
-            // Write your code here...
-            return new Vector3(0, 0, 0);
+            return new Vector3(a.X * b, a.Y * b, a.Z * b);
         }
 
         /// <summary>
@@ -144,8 +144,7 @@ namespace RayTracer
         /// <returns>Multiplied vector</returns>
         public static Vector3 operator *(double b, Vector3 a)
         {
-            // Write your code here...
-            return new Vector3(0, 0, 0);
+            return new Vector3(a.X * b, a.Y * b, a.Z * b);
         }
 
         /// <summary>
@@ -156,8 +155,11 @@ namespace RayTracer
         /// <returns>Divided vector</returns>
         public static Vector3 operator /(Vector3 a, double b)
         {
-            // Write your code here...
-            return new Vector3(0, 0, 0);
+            if (b == 0)
+            {
+                throw new DivideByZeroException();
+            }
+            return new Vector3(a.X / b, a.Y / b, a.Z / b);
         }
 
         /// <summary>
