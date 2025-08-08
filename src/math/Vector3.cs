@@ -64,7 +64,7 @@ namespace RayTracer
             double len = Length();
             if (len == 0)
             {
-                return new Vector3(0, 0, 0);
+                throw new DivideByZeroException();
             }
             return this / len;
         }
