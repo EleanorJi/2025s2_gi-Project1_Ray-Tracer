@@ -84,10 +84,33 @@ namespace RayTracer
         /// <param name="time">Time since start in seconds</param>
         public void Render(Image outputImage, double time = 0)
         {
-            for (int y = 0; y < outputImage.Height; y++)
+            // widths and heights of output image
+            int width = outputImage.Width;
+            int height = outputImage.Height;
+            double aspectRatio = (double) width/height;
+
+            // camera position
+            Vector3 camera = new Vector3(0, 0, 0);
+
+            // horizontal FOV and vertical FOV
+            double horiFov = 60.0 * Math.PI / 180.0;
+            double vertFov = 2 * Math.Atan(Math.Tan(horiFov / 2) / aspectRatio);
+
+            // half-width and half-height of the imaging plane at z = 1
+            double tanHalfHoriFov = Math.Tan(horiFov / 2);
+            double tanHalfVertFov = Math.Tan(vertFov / 2);
+
+
+            for (int y = 0; y < height; y++)
             {
-                for (int x = 0; x < outputImage.Width; x++)
+                for (int x = 0; x < width; x++)
                 {
+                    // Stage 1.3 - Fire a ray for each pixel
+                    double rayX = ((x + 0.5) / width* 2 -1) * tanHalfHoriFov;
+                    double rayY = (1 - (y + 0.5) / height * 2) * tanHalfVertFov;
+                    Vector3 rayDirection = new Vector3(rayX, rayY, 1);
+                    Ray ray = new Ray(camera, rayDirection);
+
                     Color pixelColor = new Color(1, 1, 1);
                     outputImage.SetPixel(x, y, pixelColor);
                 }
