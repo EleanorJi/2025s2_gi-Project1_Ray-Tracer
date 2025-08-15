@@ -106,13 +106,23 @@ namespace RayTracer
                 for (int x = 0; x < width; x++)
                 {
                     // Stage 1.3 - Fire a ray for each pixel
-                    double rayX = ((x + 0.5) / width* 2 -1) * tanHalfHoriFov;
+                    double rayX = ((x + 0.5) / width * 2 - 1) * tanHalfHoriFov;
                     double rayY = (1 - (y + 0.5) / height * 2) * tanHalfVertFov;
                     Vector3 rayDirection = new Vector3(rayX, rayY, 1);
                     Ray ray = new Ray(camera, rayDirection);
 
-                    Color pixelColor = new Color(1, 1, 1);
+                    Color pixelColor = new Color(0, 0, 0);
                     outputImage.SetPixel(x, y, pixelColor);
+                    
+                    // Stage 1.5 - Output primitives as solid colours
+                    foreach (SceneEntity entity in this.entities)
+                    {
+                        RayHit hit = entity.Intersect(ray);
+                        if (hit != null)
+                        {
+                            outputImage.SetPixel(x, y, entity.Material.DiffuseColor);
+                        }
+                    }
                 }
             }
         }
