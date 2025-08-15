@@ -31,16 +31,19 @@ namespace RayTracer
         /// <returns>Hit data (or null if no intersection)</returns>
         public RayHit Intersect(Ray ray)
         {
+            // basic caculate
             Vector3 oc = ray.Origin - this.center;
             double a = ray.Direction.Dot(ray.Direction);
             double b = 2 * oc.Dot(ray.Direction);
             double c = oc.Dot(oc) - this.radius * this.radius;
             double delta = b * b - 4 * a * c;
 
+            // no intersection
             if (delta < 0)
             {
                 return null;
             }
+            // one intersection
             else if (delta == 0)
             {
                 double t = -b / (2 * a);
@@ -53,20 +56,24 @@ namespace RayTracer
                     return null;
                 }
             }
+            // two intersections
             else
             {
                 double sqrtDelta = Math.Sqrt(delta);
                 double t1 = (-b - sqrtDelta) / (2 * a);
                 double t2 = (-b + sqrtDelta) / (2 * a);
 
+                // entry intersection
                 if (t1 > 0)
                 {
                     return CreateHit(ray, t1);
                 }
+                // exit intersection
                 else if (t2 > 0)
                 {
                     return CreateHit(ray, t2);
                 }
+                // both intersection points are on the opposite side of the light ray
                 else
                 {
                     return null;
@@ -76,9 +83,10 @@ namespace RayTracer
 
         /// <summary>
         /// Create the hit of the sphere.
+        /// </summary>
         /// <param name="ray">The ray to the sphere</param>
         /// <param name="t">t of the ray</param>
-        /// </summary>
+        /// <returns>Hit data </returns>
         private RayHit CreateHit(Ray ray, double t)
         {
             Vector3 hitPoint = ray.Origin + t * ray.Direction;
