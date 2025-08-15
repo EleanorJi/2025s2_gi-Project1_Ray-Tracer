@@ -31,8 +31,59 @@ namespace RayTracer
         /// <returns>Hit data (or null if no intersection)</returns>
         public RayHit Intersect(Ray ray)
         {
-            // Write your code here...
-            return null;
+            Vector3 oc = ray.Origin - this.center;
+            double a = ray.Direction.Dot(ray.Direction);
+            double b = 2 * oc.Dot(ray.Direction);
+            double c = oc.Dot(oc) - this.radius * this.radius;
+            double delta = b * b - 4 * a * c;
+
+            if (delta < 0)
+            {
+                return null;
+            }
+            else if (delta == 0)
+            {
+                double t = -b / (2 * a);
+                if (t > 0)
+                {
+                    return CreateHit(ray, t);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                double sqrtDelta = Math.Sqrt(delta);
+                double t1 = (-b - sqrtDelta) / (2 * a);
+                double t2 = (-b + sqrtDelta) / (2 * a);
+
+                if (t1 > 0)
+                {
+                    return CreateHit(ray, t1);
+                }
+                else if (t2 > 0)
+                {
+                    return CreateHit(ray, t2);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Create the hit of the sphere.
+        /// <param name="ray">The ray to the sphere</param>
+        /// <param name="t">t of the ray</param>
+        /// </summary>
+        private RayHit CreateHit(Ray ray, double t)
+        {
+            Vector3 hitPoint = ray.Origin + t * ray.Direction;
+            Vector3 normal = (hitPoint - this.center).Normalized();
+            return new RayHit(hitPoint, normal, ray.Direction, this.Material);
         }
 
         /// <summary>
