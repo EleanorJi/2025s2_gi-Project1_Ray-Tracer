@@ -112,17 +112,25 @@ namespace RayTracer
                     Ray ray = new Ray(camera, rayDirection);
 
                     Color pixelColor = new Color(0, 0, 0);
-                    outputImage.SetPixel(x, y, pixelColor);
                     
                     // Stage 1.5 - Output primitives as solid colours
+                    double closestT = double.PositiveInfinity;
                     foreach (SceneEntity entity in this.entities)
                     {
                         RayHit hit = entity.Intersect(ray);
                         if (hit != null)
                         {
-                            outputImage.SetPixel(x, y, entity.Material.DiffuseColor);
+                            double currentT = (hit.Position - ray.Origin).LengthSq();
+
+                            // If object is closer, then update the color.
+                            if (currentT > 0 && currentT < closestT)
+                            {
+                                closestT = currentT;
+                                pixelColor = entity.Material.DiffuseColor;
+                            }
                         }
                     }
+                    outputImage.SetPixel(x, y, pixelColor);
                 }
             }
         }
