@@ -144,6 +144,14 @@ namespace RayTracer
             }
         }
 
+        /// <summary>
+        /// Computes the local illumination at a ray hit point.
+        /// This combines ambient, diffuse, and specular lighting contributions from all light sources in the scene.
+        /// </summary>
+        /// <param name="hit">Ray hit data containing position, normal, and incident direction</param>
+        /// <param name="entity">The scene entity that was hit</param>
+        /// <param name="cameraPosition">Position of the camera in world space</param>
+        /// <returns>The computed color at the hit point, accounting for all light sources</returns>
         private Color LocalIllumination(RayHit hit, SceneEntity entity, Vector3 cameraPosition)
         {
             // Ambient reflection
