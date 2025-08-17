@@ -87,7 +87,7 @@ namespace RayTracer
             // widths and heights of output image
             int width = outputImage.Width;
             int height = outputImage.Height;
-            double aspectRatio = (double) width/height;
+            double aspectRatio = (double)width / height;
 
             // camera position
             Vector3 cameraPosition = new Vector3(0, 0, 0);
@@ -163,6 +163,11 @@ namespace RayTracer
 
             foreach (PointLight light in this.lights)
             {
+                // Stage 2.2 - Shadow rays
+                if (IsInShadow(hit, light))
+                {
+                    continue;
+                }
                 // Diffuse reflection
                 Vector3 lDir = (light.Position - hit.Position).Normalized();
                 double diffuseFactor = Math.Max(0, hit.Normal.Dot(lDir));
@@ -176,6 +181,34 @@ namespace RayTracer
                 local += specular;
             }
             return local;
+        }
+
+        /// <summary>
+        /// Checks if a point is in shadow with respect to a light source.
+        /// </summary>
+        /// <param name="hit">Ray hit data</param>
+        /// <param name="light">The light source to check</param> 
+        /// <returns>True if the point is in shadow (light is blocked by another object), false if light is visible</returns>
+        private bool IsInShadow(RayHit hit, PointLight light)
+        {
+            Vector3 lDir = (light.Position - hit.Position).Normalized();
+            double distanceToLight = (light.Position - hit.Position).Length();
+            Vector3 shadowRayOrigin = hit.Position + 1e-5 * hit.Normal;
+            Ray shadowRay = new Ray(shadowRayOrigin, lDir);
+
+            foreach (SceneEntity entity in this.entities)
+            {
+                RayHit shadowHit = entity.Intersect(shadowRay);
+                if (shadowHit != null)
+                {
+                    double distanceToHit = (shadowHit.Position - hit.Position).Length();
+                    if (distanceToHit < distanceToLight)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
     }
