@@ -15,6 +15,7 @@ namespace RayTracer
         private ISet<SceneEntity> entities;
         private ISet<PointLight> lights;
         private ISet<Animation> animations;
+        private const int DefaultMaxRecursionDepth = 5;
 
         /// <summary>
         /// Construct a new scene with provided options.
@@ -111,37 +112,77 @@ namespace RayTracer
                     Vector3 rayDirection = new Vector3(rayX, rayY, 1);
                     Ray ray = new Ray(cameraPosition, rayDirection);
 
-                    Color pixelColor = ambientLightColor;
+                    // stage 2.3 - Reflection rays
+                    Color pixelColor = Trace(ray, 0);
 
-                    // Stage 1.5 - Output primitives as solid colours
-                    double closestT = double.PositiveInfinity;
-                    SceneEntity closestEntity = null;
-                    RayHit closestHit = null;
-                    foreach (SceneEntity entity in this.entities)
-                    {
-                        RayHit hit = entity.Intersect(ray);
-                        if (hit != null)
-                        {
-                            double currentT = (hit.Position - ray.Origin).LengthSq();
-
-                            // If object is closer, then update the color.
-                            if (currentT > 0 && currentT < closestT)
-                            {
-                                closestT = currentT;
-                                closestEntity = entity;
-                                closestHit = hit;
-                            }
-                        }
-                    }
-
-                    // stage 2.1 - Local Illumination (Ambient, Diffuse, Specular)
-                    if (closestHit != null)
-                    {
-                        pixelColor = LocalIllumination(closestHit, closestEntity, cameraPosition);
-                    }
                     outputImage.SetPixel(x, y, pixelColor);
                 }
             }
+        }
+        
+        /// <summary>
+        /// Recursively traces a ray through the scene and calculating color.
+        /// </summary>
+        /// <param name="ray">The ray to trace through the scene</param>
+        /// <param name="depth">Current recursion depth</param>
+        /// <returns>The computed color along the ray path</returns>
+        private Color Trace(Ray ray, int depth)
+        {
+
+            // Find the nearest intersection point
+            var (closestEntity, closestHit) = FindClosestHit(ray);
+
+            // No intersection then return black
+            if (closestHit == null)
+                return ambientLightColor;
+
+            // Calculate local illumination
+            Color localColor = LocalIllumination(closestHit, closestEntity, ray.Origin);
+
+            // If the material does not reflect or reaches the maximum recursion depth, directly return the local illumination.
+            if (closestEntity.Material.Reflectivity <= 0 || depth >= DefaultMaxRecursionDepth)
+                return localColor;
+
+            // Calculate the reflection direction
+            Vector3 reflectedDir = ray.Direction - 2 * closestHit.Normal.Dot(ray.Direction) * closestHit.Normal;
+            Vector3 reflectedOrigin = closestHit.Position + 1e-5 * closestHit.Normal;
+
+            // Recursive tracing of reflected light
+            Ray reflectedRay = new Ray(reflectedOrigin, reflectedDir.Normalized());
+            Color reflectedColor = Trace(reflectedRay, depth + 1);
+
+            // combine color
+            Color finalColor = localColor + reflectedColor * closestEntity.Material.Reflectivity;
+            return finalColor;
+        }
+
+        /// <summary>
+        /// Finds the closest intersection point between a ray and all entities in the scene.
+        /// </summary>
+        /// <param name="ray">The ray to test for intersections</param>
+        /// <returns>the closest entity and the hit data</returns>
+        private (SceneEntity entity, RayHit hit) FindClosestHit(Ray ray)
+        {
+            double closestT = double.PositiveInfinity;
+            SceneEntity closestEntity = null;
+            RayHit closestHit = null;
+            foreach (SceneEntity entity in this.entities)
+            {
+                RayHit hit = entity.Intersect(ray);
+                if (hit != null)
+                {
+                    double currentT = (hit.Position - ray.Origin).LengthSq();
+
+                    // If object is closer, then update the color.
+                    if (currentT > 0 && currentT < closestT)
+                    {
+                        closestT = currentT;
+                        closestEntity = entity;
+                        closestHit = hit;
+                    }
+                }
+            }
+            return (closestEntity, closestHit);
         }
 
         /// <summary>
