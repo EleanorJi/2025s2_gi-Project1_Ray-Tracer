@@ -10,6 +10,7 @@ namespace RayTracer
         private Vector3 center;
         private double radius;
         private Material material;
+        private const double offset = 1e-10;
 
         /// <summary>
         /// Construct a sphere given its center point and a radius.
@@ -39,15 +40,15 @@ namespace RayTracer
             double delta = b * b - 4 * a * c;
 
             // no intersection
-            if (delta < 1e-10)
+            if (delta < offset)
             {
                 return null;
             }
             // one intersection
-            else if (Math.Abs(delta) < 1e-10)
+            else if (Math.Abs(delta) < offset)
             {
                 double t = -b / (2 * a);
-                if (t > 1e-10)
+                if (t > offset)
                 {
                     return CreateHit(ray, t);
                 }
@@ -64,12 +65,12 @@ namespace RayTracer
                 double t2 = (-b + sqrtDelta) / (2 * a);
 
                 // entry intersection
-                if (t1 > 1e-10)
+                if (t1 > offset)
                 {
                     return CreateHit(ray, t1);
                 }
                 // exit intersection
-                else if (t2 > 1e-10)
+                else if (t2 > offset)
                 {
                     return CreateHit(ray, t2);
                 }

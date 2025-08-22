@@ -9,6 +9,7 @@ namespace RayTracer
     {
         private Vector3 v0, v1, v2;
         private Material material;
+        private const double offset = 1e-10;
 
         /// <summary>
         /// Construct a triangle object given three vertices.
@@ -41,7 +42,7 @@ namespace RayTracer
             double nr = normal.Dot(ray.Direction);
 
             // parallel to the plane
-            if (Math.Abs(nr) < 1e-10)
+            if (Math.Abs(nr) < offset)
             {
                 return null;
             }
@@ -51,7 +52,7 @@ namespace RayTracer
             double t = -normal.Dot(ao) / nr;
 
             // pposite side of origin
-            if (t < 1e-10)
+            if (t < offset)
             {
                 return null;
             }
@@ -70,7 +71,7 @@ namespace RayTracer
             double w = areaABP / areaABC;
 
             // P outside the triangle
-            if (u < -1e-10 || v < -1e-10 || w < -1e-10 || Math.Abs(u + v + w - 1) > 1e-10)
+            if (u < -offset || v < -offset || w < -offset || Math.Abs(u + v + w - 1) > offset)
             {
                 return null;
             }

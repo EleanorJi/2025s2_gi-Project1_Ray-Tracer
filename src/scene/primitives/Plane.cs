@@ -11,6 +11,7 @@ namespace RayTracer
         private Vector3 center;
         private Vector3 normal;
         private Material material;
+        private const double offset = 1e-10;
 
         /// <summary>
         /// Construct an infinite plane object.
@@ -34,14 +35,14 @@ namespace RayTracer
         {
             double nr = ray.Direction.Dot(normal);
             // parallel to the plane
-            if (Math.Abs(nr) < 1e-10)
+            if (Math.Abs(nr) < offset)
             {
                 return null;
             }
             double t = - (ray.Origin - center).Dot(normal) / nr;
             Vector3 hitPoint = ray.Origin + t * ray.Direction;
             // opposite side of origin
-            if (t < 1e-10)
+            if (t < offset)
             {
                 return null;
             }

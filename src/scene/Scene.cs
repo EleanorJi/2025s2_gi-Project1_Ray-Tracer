@@ -15,6 +15,7 @@ namespace RayTracer
         private ISet<SceneEntity> entities;
         private ISet<PointLight> lights;
         private ISet<Animation> animations;
+        private const double offset = 1e-10;
         private const int DefaultMaxRecursionDepth = 5;
 
         /// <summary>
@@ -153,7 +154,7 @@ namespace RayTracer
             if (closestEntity.Material.Reflectivity > 0)
             {
                 Vector3 reflectedDir = D - 2 * D.Dot(N) * N;
-                Vector3 reflectedOrigin = closestHit.Position + 1e-10 * N;
+                Vector3 reflectedOrigin = closestHit.Position + offset * N;
                 Ray reflectedRay = new Ray(reflectedOrigin, reflectedDir.Normalized());
                 reflectedColor = Trace(reflectedRay, depth + 1);
             }
@@ -188,7 +189,7 @@ namespace RayTracer
                 {
                     double cosThetaT = Math.Sqrt(1.0 - sin2ThetaT);
                     Vector3 refractedDir = refractedRatio * D + (refractedRatio * cosThetaI - cosThetaT) * N;
-                    Vector3 refractedOrigin = closestHit.Position - 1e-10 * N;
+                    Vector3 refractedOrigin = closestHit.Position - offset * N;
                     Ray refractedRay = new Ray(refractedOrigin, refractedDir.Normalized());
 
                     refractedColor = Trace(refractedRay, depth + 1);
@@ -280,7 +281,7 @@ namespace RayTracer
         {
             Vector3 lDir = (light.Position - hit.Position).Normalized();
             double distanceToLight = (light.Position - hit.Position).Length();
-            Vector3 shadowRayOrigin = hit.Position + 1e-10 * hit.Normal;
+            Vector3 shadowRayOrigin = hit.Position + offset * hit.Normal;
             Ray shadowRay = new Ray(shadowRayOrigin, lDir);
 
             foreach (SceneEntity entity in this.entities)
