@@ -121,7 +121,7 @@ namespace RayTracer
         }
         
         /// <summary>
-        /// Recursively traces a ray through the scene and calculating color.
+        /// Recursively traces a ray through the scene and calculates color.
         /// </summary>
         /// <param name="ray">The ray to trace through the scene</param>
         /// <param name="depth">Current recursion depth</param>
@@ -132,29 +132,75 @@ namespace RayTracer
             // Find the nearest intersection point
             var (closestEntity, closestHit) = FindClosestHit(ray);
 
-            // No intersection then return black
+            // No intersection then return ambient light color
             if (closestHit == null)
                 return ambientLightColor;
 
             // Calculate local illumination
             Color localColor = LocalIllumination(closestHit, closestEntity, ray.Origin);
 
-            // If the material does not reflect or reaches the maximum recursion depth, directly return the local illumination.
-            if (closestEntity.Material.Reflectivity <= 0 || depth >= DefaultMaxRecursionDepth)
+            // If reaches the maximum recursion depth, directly return the local illumination.
+            if (depth >= DefaultMaxRecursionDepth)
                 return localColor;
 
-            // Calculate the reflection direction
-            Vector3 reflectedDir = ray.Direction - 2 * closestHit.Normal.Dot(ray.Direction) * closestHit.Normal;
-            Vector3 reflectedOrigin = closestHit.Position + 1e-5 * closestHit.Normal;
+            Vector3 N = closestHit.Normal;
+            Vector3 D = ray.Direction.Normalized();
 
-            // Recursive tracing of reflected light
-            Ray reflectedRay = new Ray(reflectedOrigin, reflectedDir.Normalized());
-            Color reflectedColor = Trace(reflectedRay, depth + 1);
+            Color reflectedColor = ambientLightColor;
+            Color refractedColor = ambientLightColor;
+
+            // Stage 2.3 - Reflection rays
+            if (closestEntity.Material.Reflectivity > 0)
+            {
+                Vector3 reflectedDir = D - 2 * D.Dot(N) * N;
+                Vector3 reflectedOrigin = closestHit.Position + 1e-10 * N;
+                Ray reflectedRay = new Ray(reflectedOrigin, reflectedDir.Normalized());
+                reflectedColor = Trace(reflectedRay, depth + 1);
+            }
+
+            // Stage 2.4 – Refraction rays
+            if (closestEntity.Material.Transmissivity > 0)
+            {
+                double nI, nT;
+
+                // Determine whether to enter or exit the object
+                if (D.Dot(N) > 0)
+                {
+                    // exit, from the object to the air
+                    nI = closestEntity.Material.RefractiveIndex;
+                    nT = 1.0;
+                    // flip the normal
+                    N = -N;
+                }
+                else
+                {
+                    // enter, from the air entering the object
+                    nI = 1.0;
+                    nT = closestEntity.Material.RefractiveIndex;
+                }
+
+                double refractedRatio = nI / nT;
+                double cosThetaI = -D.Dot(N);
+                double sin2ThetaT = refractedRatio * refractedRatio * (1.0 - cosThetaI * cosThetaI);
+
+                // No total internal reflection
+                if (sin2ThetaT <= 1.0)
+                {
+                    double cosThetaT = Math.Sqrt(1.0 - sin2ThetaT);
+                    Vector3 refractedDir = refractedRatio * D + (refractedRatio * cosThetaI - cosThetaT) * N;
+                    Vector3 refractedOrigin = closestHit.Position - 1e-10 * N;
+                    Ray refractedRay = new Ray(refractedOrigin, refractedDir.Normalized());
+
+                    refractedColor = Trace(refractedRay, depth + 1);
+                }
+                // Otherwise: Total internal reflection, just ignore the refracted part
+            }
 
             // combine color
-            Color finalColor = localColor + reflectedColor * closestEntity.Material.Reflectivity;
+            Color finalColor = localColor + reflectedColor * closestEntity.Material.Reflectivity + refractedColor * closestEntity.Material.Transmissivity;
             return finalColor;
         }
+
 
         /// <summary>
         /// Finds the closest intersection point between a ray and all entities in the scene.
@@ -234,7 +280,7 @@ namespace RayTracer
         {
             Vector3 lDir = (light.Position - hit.Position).Normalized();
             double distanceToLight = (light.Position - hit.Position).Length();
-            Vector3 shadowRayOrigin = hit.Position + 1e-5 * hit.Normal;
+            Vector3 shadowRayOrigin = hit.Position + 1e-10 * hit.Normal;
             Ray shadowRay = new Ray(shadowRayOrigin, lDir);
 
             foreach (SceneEntity entity in this.entities)
