@@ -34,14 +34,14 @@ namespace RayTracer
         {
             double nr = ray.Direction.Dot(normal);
             // parallel to the plane
-            if (nr == 0)
+            if (Math.Abs(nr) < 1e-10)
             {
                 return null;
             }
             double t = - (ray.Origin - center).Dot(normal) / nr;
             Vector3 hitPoint = ray.Origin + t * ray.Direction;
             // opposite side of origin
-            if (t < 0)
+            if (t < 1e-10)
             {
                 return null;
             }

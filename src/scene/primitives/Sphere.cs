@@ -39,15 +39,15 @@ namespace RayTracer
             double delta = b * b - 4 * a * c;
 
             // no intersection
-            if (delta < 0)
+            if (delta < 1e-10)
             {
                 return null;
             }
             // one intersection
-            else if (delta == 0)
+            else if (Math.Abs(delta) < 1e-10)
             {
                 double t = -b / (2 * a);
-                if (t > 0)
+                if (t > 1e-10)
                 {
                     return CreateHit(ray, t);
                 }
@@ -64,12 +64,12 @@ namespace RayTracer
                 double t2 = (-b + sqrtDelta) / (2 * a);
 
                 // entry intersection
-                if (t1 > 0)
+                if (t1 > 1e-10)
                 {
                     return CreateHit(ray, t1);
                 }
                 // exit intersection
-                else if (t2 > 0)
+                else if (t2 > 1e-10)
                 {
                     return CreateHit(ray, t2);
                 }

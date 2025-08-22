@@ -41,7 +41,7 @@ namespace RayTracer
             double nr = normal.Dot(ray.Direction);
 
             // parallel to the plane
-            if (nr == 0)
+            if (Math.Abs(nr) < 1e-10)
             {
                 return null;
             }
@@ -51,7 +51,7 @@ namespace RayTracer
             double t = -normal.Dot(ao) / nr;
 
             // pposite side of origin
-            if (t < 0)
+            if (t < 1e-10)
             {
                 return null;
             }
@@ -70,7 +70,7 @@ namespace RayTracer
             double w = areaABP / areaABC;
 
             // P outside the triangle
-            if (u < -1e-6 || v < -1e-6 || w < -1e-6 || Math.Abs(u + v + w - 1) > 1e-6)
+            if (u < -1e-10 || v < -1e-10 || w < -1e-10 || Math.Abs(u + v + w - 1) > 1e-10)
             {
                 return null;
             }
