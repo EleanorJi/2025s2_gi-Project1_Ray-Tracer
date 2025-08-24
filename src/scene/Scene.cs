@@ -92,7 +92,15 @@ namespace RayTracer
             double aspectRatio = (double)width / height;
 
             // camera position
-            Vector3 cameraPosition = new Vector3(0, 0, 0);
+            Vector3 cameraPosition = this.camera.Transform.Position;
+            
+            // Calculate the local coordinate system of the camera
+            Vector3 defaultForward = new Vector3(0, 0, 1);
+            Vector3 defaultUp = new Vector3(0, 1, 0);
+
+            Vector3 cameraForward = this.camera.Transform.Rotation.Rotate(defaultForward).Normalized();
+            Vector3 cameraUp = this.camera.Transform.Rotation.Rotate(defaultUp).Normalized();
+            Vector3 cameraRight = cameraUp.Cross(cameraForward).Normalized();
 
             // horizontal FOV and vertical FOV
             double horiFov = 60.0 * Math.PI / 180.0;
@@ -110,7 +118,7 @@ namespace RayTracer
                     // Stage 1.3 - Fire a ray for each pixel
                     double rayX = ((x + 0.5) / width * 2 - 1) * tanHalfHoriFov;
                     double rayY = (1 - (y + 0.5) / height * 2) * tanHalfVertFov;
-                    Vector3 rayDirection = new Vector3(rayX, rayY, 1);
+                    Vector3 rayDirection = (cameraForward + rayX * cameraRight + rayY * cameraUp).Normalized();
                     Ray ray = new Ray(cameraPosition, rayDirection);
 
                     // stage 2.3 - Reflection rays
