@@ -84,5 +84,9 @@ namespace RayTracer
         /// The material of the triangle.
         /// </summary>
         public Material Material { get { return this.material; } }
+        
+        public Vector3 V0 { get { return v0; } }
+        public Vector3 V1 { get { return v1; } }
+        public Vector3 V2 { get { return v2; } }
     }
 }

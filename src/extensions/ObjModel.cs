@@ -14,6 +14,7 @@ namespace RayTracer
         private List<Vector3> vertices;
         private List<Vector3> normals;
         private List<Triangle> triangles;
+        private BVHNode root;
 
         /// <summary>
         /// Construct a new OBJ model.
@@ -67,6 +68,16 @@ namespace RayTracer
                     triangles.Add(new Triangle(vertices[idx0], vertices[idx1], vertices[idx2], material));
                 }
             }
+
+            // build BVH
+            if (triangles.Count > 0)
+            {
+                root = new BVHNode(triangles);
+            }
+            else
+            {
+                root = null;
+            }
         }
 
         /// <summary>
@@ -77,24 +88,8 @@ namespace RayTracer
         /// <returns>Ray hit data, or null if no hit</returns>
         public RayHit Intersect(Ray ray)
         {
-            double closestT = double.PositiveInfinity;
-            RayHit closestHit = null;
-            foreach (Triangle triangle in triangles)
-            {
-                RayHit hit = triangle.Intersect(ray);
-                if (hit != null)
-                {
-                    double currentT = (hit.Position - ray.Origin).LengthSq();
-
-                    // If object is closer, then update the color.
-                    if (currentT > 0 && currentT < closestT)
-                    {
-                        closestT = currentT;
-                        closestHit = hit;
-                    }
-                }
-            }
-            return closestHit;
+            if (root == null) return null;
+            return root.Intersect(ray);
         }
 
         /// <summary>
