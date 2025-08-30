@@ -110,20 +110,41 @@ namespace RayTracer
             double tanHalfHoriFov = Math.Tan(horiFov / 2);
             double tanHalfVertFov = Math.Tan(vertFov / 2);
 
+            // Stage 3.2.A1: Get anti-aliasing multiplier from options
+            int aaSamples = options.AAMultiplier;
+            int totalSamples = aaSamples * aaSamples;
+            double sampleStep = 1.0 / aaSamples;
 
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
-                    // Stage 1.3 - Fire a ray for each pixel
-                    double rayX = ((x + 0.5) / width * 2 - 1) * tanHalfHoriFov;
-                    double rayY = (1 - (y + 0.5) / height * 2) * tanHalfVertFov;
-                    Vector3 rayDirection = (cameraForward + rayX * cameraRight + rayY * cameraUp).Normalized();
-                    Ray ray = new Ray(cameraPosition, rayDirection);
+                    Color pixelColor = new Color(0, 0, 0);
+                    
+                    // Stage 3.2.A1: sample multiple rays within the pixel
+                    for (int sampleY = 0; sampleY < aaSamples; sampleY++)
+                    {
+                        for (int sampleX = 0; sampleX < aaSamples; sampleX++)
+                        {
+                            // Calculate precise sampling position within the pixel
+                            double subPixelX = x + (sampleX + 0.5) * sampleStep;
+                            double subPixelY = y + (sampleY + 0.5) * sampleStep;
+                            
+                            // Get camera space coordinates
+                            double rayX = (subPixelX / width * 2 - 1) * tanHalfHoriFov;
+                            double rayY = (1 - subPixelY / height * 2) * tanHalfVertFov;
+                            
+                            Vector3 rayDirection = (cameraForward + rayX * cameraRight + rayY * cameraUp).Normalized();
+                            Ray ray = new Ray(cameraPosition, rayDirection);
 
-                    // stage 2.3 - Reflection rays
-                    Color pixelColor = Trace(ray, 0);
-
+                            // Trace the ray and accumulate color
+                            pixelColor += Trace(ray, 0);
+                        }
+                    }
+                    
+                    // Average the samples
+                    pixelColor /= totalSamples;
+                    
                     outputImage.SetPixel(x, y, pixelColor);
                 }
             }
