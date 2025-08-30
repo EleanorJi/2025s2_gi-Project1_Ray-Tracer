@@ -14,6 +14,7 @@ namespace RayTracer
         private List<Vector3> vertices;
         private List<Vector3> normals;
         private List<Triangle> triangles;
+        private List<TextureCoord> texcoords;
         private BVHNode root;
 
         /// <summary>
@@ -30,6 +31,7 @@ namespace RayTracer
             this.vertices = new List<Vector3>();
             this.normals = new List<Vector3>();
             this.triangles = new List<Triangle>();
+            this.texcoords = new List<TextureCoord>();
 
             // Here's some code to get you started reading the file...
             string[] lines = File.ReadAllLines(objFilePath);
@@ -38,11 +40,11 @@ namespace RayTracer
                 // The current line is lines[i]
                 string[] tokens = lines[i].Split(' ');
 
-                if (tokens.Length == 0 || tokens.Length != 4)
+                if (tokens.Length == 0)
                     continue;
 
                 string start = tokens[0];
-                if (start == "v")
+                if (start == "v" && tokens.Length == 4)
                 {
                     double x = double.Parse(tokens[1]);
                     double y = double.Parse(tokens[2]);
@@ -51,7 +53,13 @@ namespace RayTracer
                     vertex = transform.Apply(vertex);
                     vertices.Add(vertex);
                 }
-                else if (start == "vn")
+                else if (start == "vt" && tokens.Length == 3)
+                {
+                    double u = double.Parse(tokens[1]);
+                    double v = double.Parse(tokens[2]);
+                    texcoords.Add(new TextureCoord(u, v));
+                }
+                else if (start == "vn" && tokens.Length == 4)
                 {
                     double nx = double.Parse(tokens[1]);
                     double ny = double.Parse(tokens[2]);
@@ -60,12 +68,30 @@ namespace RayTracer
                     normal = transform.Rotation.Rotate(normal).Normalized();
                     normals.Add(normal);
                 }
-                else if (start == "f")
-                {    
-                    int idx0 = int.Parse(tokens[1].Split('/')[0]) - 1;
-                    int idx1 = int.Parse(tokens[2].Split('/')[0]) - 1;
-                    int idx2 = int.Parse(tokens[3].Split('/')[0]) - 1;
-                    triangles.Add(new Triangle(vertices[idx0], vertices[idx1], vertices[idx2], material));
+                else if (start == "f" && tokens.Length == 4)
+                {
+                    string[] v0 = tokens[1].Split('/');
+                    string[] v1 = tokens[2].Split('/');
+                    string[] v2 = tokens[3].Split('/');
+
+                    int idx0 = int.Parse(v0[0]) - 1;
+                    int idx1 = int.Parse(v1[0]) - 1;
+                    int idx2 = int.Parse(v2[0]) - 1;
+
+                    TextureCoord uv0 = default;
+                    TextureCoord uv1 = default;
+                    TextureCoord uv2 = default;
+
+                    // If there is a texture coordinate index, record them
+                    if (v0.Length > 1 && !string.IsNullOrEmpty(v0[1]))
+                        uv0 = texcoords[int.Parse(v0[1]) - 1];
+                    if (v1.Length > 1 && !string.IsNullOrEmpty(v0[1]))
+                        uv1 = texcoords[int.Parse(v1[1]) - 1];
+                    if (v2.Length > 1 && !string.IsNullOrEmpty(v0[1]))
+                        uv2 = texcoords[int.Parse(v2[1]) - 1];
+
+                    triangles.Add(new Triangle(vertices[idx0], vertices[idx1], vertices[idx2],
+                                            material, uv0, uv1, uv2));
                 }
             }
 

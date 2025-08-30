@@ -8,6 +8,7 @@ namespace RayTracer
     public class Triangle : SceneEntity
     {
         private Vector3 v0, v1, v2;
+        private TextureCoord uv0, uv1, uv2;
         private Material material;
         private const double offset = 1e-10;
 
@@ -18,12 +19,19 @@ namespace RayTracer
         /// <param name="v1">Second vertex position</param>
         /// <param name="v2">Third vertex position</param>
         /// <param name="material">Material assigned to the triangle</param>
-        public Triangle(Vector3 v0, Vector3 v1, Vector3 v2, Material material)
+        /// <param name="uv0">Texture coordinate for the first vertex</param>
+        /// <param name="uv1">Texture coordinate for the second vertex</param>
+        /// <param name="uv2">Texture coordinate for the third vertex</param>
+        public Triangle(Vector3 v0, Vector3 v1, Vector3 v2, Material material,
+                TextureCoord uv0 = default, TextureCoord uv1 = default, TextureCoord uv2 = default)
         {
             this.v0 = v0;
             this.v1 = v1;
             this.v2 = v2;
             this.material = material;
+            this.uv0 = uv0;
+            this.uv1 = uv1;
+            this.uv2 = uv2;
         }
 
         /// <summary>
@@ -77,7 +85,8 @@ namespace RayTracer
             }
 
             // P inside the triangle, return the hit data
-            return new RayHit(hitPoint, normal.Normalized(), ray.Direction, this.Material);
+            TextureCoord uv = u * uv0 + v * uv1 + w * uv2;
+            return new RayHit(hitPoint, normal.Normalized(), ray.Direction, this.Material, uv);
         }
 
         /// <summary>

@@ -25,5 +25,11 @@ namespace RayTracer
             this.colorMap = colorMap;
             this.normalMap = normalMap;
         }
+        public Color GetColor(TextureCoord uv)
+        {
+            int x = (int)(uv.U * (colorMap.Width - 1));
+            int y = (int)((1 - uv.V) * (colorMap.Height - 1));
+            return colorMap.GetPixel(x, y);
+        }
     }
 }
