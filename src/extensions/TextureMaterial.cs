@@ -31,8 +31,7 @@ namespace RayTracer
         /// </summary>
         /// <param name="uv">a two-dimensional texture coordinate</param>
         /// <returns>The color at the specified texture coordinate</returns>
-        override
-        public Color GetDiffuseColor(TextureCoord uv)
+        public override Color GetDiffuseColor(TextureCoord uv)
         {
             // Stage 3.2 - B1: Colour texture mapping
             // For basic materials, return the base color. Texture materials
