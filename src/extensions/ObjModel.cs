@@ -53,7 +53,7 @@ namespace RayTracer
                     vertex = transform.Apply(vertex);
                     vertices.Add(vertex);
                 }
-                else if (start == "vt" && tokens.Length == 3)
+                else if (start == "vt" && tokens.Length >= 3)
                 {
                     double u = double.Parse(tokens[1]);
                     double v = double.Parse(tokens[2]);

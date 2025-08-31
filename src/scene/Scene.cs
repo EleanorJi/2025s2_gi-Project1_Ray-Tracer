@@ -288,8 +288,6 @@ namespace RayTracer
                 // Diffuse reflection
                 Vector3 lDir = (light.Position - hit.Position).Normalized();
                 double diffuseFactor = Math.Max(0, hit.Normal.Dot(lDir));
-                
-                // Stage 3.2 - B1: Colour texture mapping
                 Color diffuse = entity.Material.GetDiffuseColor(hit.TexCoord) * light.Color * diffuseFactor;
                 local += diffuse;
 
