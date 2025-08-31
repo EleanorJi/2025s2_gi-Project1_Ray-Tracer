@@ -3,7 +3,7 @@ using System;
 namespace RayTracer
 {
     /// <summary>
-    /// Class to represent an (infinite) plane in a scene.
+    /// Class to represent a sphere in a scene.
     /// </summary>
     public class Sphere : SceneEntity
     {
