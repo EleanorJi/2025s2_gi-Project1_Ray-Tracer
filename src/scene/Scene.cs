@@ -290,13 +290,7 @@ namespace RayTracer
                 double diffuseFactor = Math.Max(0, hit.Normal.Dot(lDir));
                 
                 // Stage 3.2 - B1: Colour texture mapping
-                Color materialDiffuseColor = entity.Material.DiffuseColor;
-                if (entity.Material is TextureMaterial)
-                {
-                    TextureMaterial texMat = (TextureMaterial) entity.Material;
-                    materialDiffuseColor = texMat.GetColor(hit.TexCoord);
-                }
-                Color diffuse = materialDiffuseColor * light.Color * diffuseFactor;
+                Color diffuse = entity.Material.GetDiffuseColor(hit.TexCoord) * light.Color * diffuseFactor;
                 local += diffuse;
 
                 // Specular reflection

@@ -25,8 +25,18 @@ namespace RayTracer
             this.colorMap = colorMap;
             this.normalMap = normalMap;
         }
-        public Color GetColor(TextureCoord uv)
+
+        /// <summary>
+        /// Get the color of the material at a given texture coordinate.
+        /// </summary>
+        /// <param name="uv">a two-dimensional texture coordinate</param>
+        /// <returns>The color at the specified texture coordinate</returns>
+        override
+        public Color GetDiffuseColor(TextureCoord uv)
         {
+            // Stage 3.2 - B1: Colour texture mapping
+            // For basic materials, return the base color. Texture materials
+            // will override this method to provide texture-specific colors.
             int x = (int)(uv.U * (colorMap.Width - 1));
             int y = (int)((1 - uv.V) * (colorMap.Height - 1));
             return colorMap.GetPixel(x, y);
