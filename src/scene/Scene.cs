@@ -15,7 +15,7 @@ namespace RayTracer
         private ISet<SceneEntity> entities;
         private ISet<PointLight> lights;
         private ISet<Animation> animations;
-        private const double offset = 1e-10;
+        private const double offset = 1e-6;
         private const int DefaultMaxRecursionDepth = 5;
 
         /// <summary>

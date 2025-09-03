@@ -11,7 +11,7 @@ namespace RayTracer
         private Vector3 center;
         private Vector3 normal;
         private Material material;
-        private const double offset = 1e-10;
+        private const double offset = 1e-6;
 
         /// <summary>
         /// Construct an infinite plane object.

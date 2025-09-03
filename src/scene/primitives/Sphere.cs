@@ -10,7 +10,7 @@ namespace RayTracer
         private Vector3 center;
         private double radius;
         private Material material;
-        private const double offset = 1e-10;
+        private const double offset = 1e-6;
 
         /// <summary>
         /// Construct a sphere given its center point and a radius.

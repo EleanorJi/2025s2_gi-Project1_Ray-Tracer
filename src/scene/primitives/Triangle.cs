@@ -10,7 +10,7 @@ namespace RayTracer
         private Vector3 v0, v1, v2;
         private TextureCoord uv0, uv1, uv2;
         private Material material;
-        private const double offset = 1e-10;
+        private const double offset = 1e-6;
 
         /// <summary>
         /// Construct a triangle object given three vertices.
