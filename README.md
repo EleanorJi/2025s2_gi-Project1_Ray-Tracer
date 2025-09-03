@@ -61,7 +61,7 @@ shows up here.
 
 ![My final render](images/final_scene.png)
 
-This render took **1** minutes and **33** seconds on my PC.
+This render took **3** minutes and **33** seconds on my PC.
 
 I used the following command to render the image exactly as shown:
 
