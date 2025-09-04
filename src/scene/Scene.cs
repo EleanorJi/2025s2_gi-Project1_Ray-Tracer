@@ -16,7 +16,7 @@ namespace RayTracer
         private ISet<PointLight> lights;
         private ISet<Animation> animations;
         private const double offset = 1e-6;
-        private const int DefaultMaxRecursionDepth = 5;
+        private const int DefaultMaxRecursionDepth = 10;
 
         /// <summary>
         /// Construct a new scene with provided options.
@@ -250,7 +250,7 @@ namespace RayTracer
                     double currentT = (hit.Position - ray.Origin).LengthSq();
 
                     // If object is closer, then update the color.
-                    if (currentT > 0 && currentT < closestT)
+                    if (currentT > offset && currentT < closestT - offset)
                     {
                         closestT = currentT;
                         closestEntity = entity;
