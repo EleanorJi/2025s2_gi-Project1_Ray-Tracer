@@ -92,7 +92,16 @@ namespace RayTracer
         {
             Vector3 hitPoint = ray.Origin + t * ray.Direction;
             Vector3 normal = (hitPoint - this.center).Normalized();
-            return new RayHit(hitPoint, normal, ray.Direction, this.Material);
+            // Calculate spherical coordinates into (u, v)
+            double x = normal.X;
+            double y = normal.Y;
+            double z = normal.Z;
+
+            double u = 0.5 + Math.Atan2(z, x) / (2 * Math.PI);
+            double v = 0.5 - Math.Asin(y) / Math.PI;
+
+            TextureCoord texCoord = new TextureCoord((float)u, (float)v);
+            return new RayHit(hitPoint, normal, ray.Direction, this.Material, texCoord);
         }
 
         /// <summary>

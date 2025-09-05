@@ -12,16 +12,18 @@ TextureMaterial "FloorMat" "tests/textures/checkers.png" "NULL"
 
 ProceduralMaterial "BoxMat1" "Checkers" 20 20 (0.53, 0.81, 0.92) (1.0, 0.85, 0.73)
 ProceduralMaterial "BoxMat2" "Stripes" 10 10 (1, 0, 0) (1, 1, 1)
+ProceduralMaterial "CheckersSphereMat1" "Checkers" 10 10 (0,1,0) (1,1,1)
 
 PointLight "Light1" (0, 0.8, 1.5) (0.8, 0.7, 0.6)
 PointLight "Light2" (-0.5, 0.2, 0.5) (0.6, 0.7, 0.9)
 
 ObjModel "Bunny" "tests/models/bunny-tex.obj" (-0.2, -0.9, 2) (0, 1, 0) -180 5.65 "BunnyMat"
-ObjModel "Box2" "tests/models/box.obj" (-0.4, 0.3, 2) (1, 0, 0) 50 0.17 "BoxMat2"
-ObjModel "Box3" "tests/models/box.obj" (0.5, -0.7, 1.5) (0.1, 0, 0.3) 65 0.2 "BoxMat1"
+ObjModel "Box1" "tests/models/box.obj" (0.5, -0.7, 1.5) (0.1, 0, 0.3) 65 0.2 "BoxMat1"
+ObjModel "Box2" "tests/models/box.obj" (-0.5, 0.2, 2) (1, 0, 0) 50 0.17 "BoxMat2"
 
 Sphere "MirrorSphere" (-0.65, -0.7, 1.5) 0.17 "MirrorMat"
 Sphere "GlassSphere" (0.5, 0.6, 2.2) 0.2 "GlassMat"
+Sphere "CheckersSphere" (-0.1, 0.6, 2.2) 0.15 "CheckersSphereMat1"
 
 Plane "Floor" (0, -1, 0) (0, 1, 0) "FloorMat"
 Plane "Roof" (0, 1, 0) (0, -1, 0) "GreyMat"

@@ -66,7 +66,7 @@ Tip: To tick, place an x between the square brackes [ ], like so: [x]
 
   **Option B1 Colour texture mapping:** I achieved the color texture mapping function by parsing the texture coordinate information in the OBJ file and mapping it to the texture image. Specifically, I expanded the parsing logic of the OBJ model, enabling it to recognize and store texture coordinates in a dedicated texture coordinate list. Meanwhile, when identifying the face informations, the texture coordinates corresponding to each vertex are passed to the Triangle for storage. To support texture queries, I override the GetDiffuseColor method of the TextureMaterial class, and then calculated the corresponding pixel position in the texture image based on the input texture coordinates. When calculating the intersection of light and triangles, the precise texture coordinates of the hit point are calculated through interpolation of the centroid coordinates, and these coordinates are then passed to the shading system. Eventually, a complete texture mapping process is achieved by sampling the texture image to determine the diffuse color of the object's surface.
 
-  **Option B3 Procedural textures:** I extended the ProceduralMaterial class and rewrote its GetDiffuseColor method to support two modes(checkers & stripes). The repetition frequency of the pattern in the UV direction is controlled by the scaleU and scaleV parameters. Subsequently, the corresponding methods are called based on the specified pattern type. For the checkers pattern, two colors are alternately used by calculating the parity of the sum of the integerized U and V coordinates, resulting in an alternating grid pattern. For the stripes pattern, the color alternation is determined only based on the parity of the integerized U coordinate, resulting in a striped effect parallel to the V axis.
+  **Option B3 Procedural textures:** I extended the ProceduralMaterial class and rewrote its GetDiffuseColor method to support two modes(checkers & stripes). The repetition frequency of the pattern in the UV direction is controlled by the scaleU and scaleV parameters. Subsequently, the corresponding methods are called based on the specified pattern type. For the checkers pattern, two colors are alternately used by calculating the parity of the sum of the integerized U and V coordinates, resulting in an alternating grid pattern. For the stripes pattern, the color alternation is determined only based on the parity of the integerized U coordinate, resulting in a striped effect parallel to the V axis. Additionally, I enabled procedural textures on other entities by calculating appropriate UV coordinates at the intersection points(see Reference 2).
 
 ## Final scene render
 
@@ -114,5 +114,6 @@ dotnet run -- -f tests/sample_scene_2.txt -o images/sample_scene_2.png
 
 ## References
 
-1. https://github.com/heretique/raytracey/blob/master/BvhNode.h
+1. Reference for BVHnode construction code: https://github.com/heretique/raytracey/blob/master/BvhNode.h
+2. Sphere mapping formula and theory: https://www.clicktorelease.com/blog/creating-spherical-environment-mapping-shader/
 

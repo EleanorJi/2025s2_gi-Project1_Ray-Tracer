@@ -46,7 +46,25 @@ namespace RayTracer
             {
                 return null;
             }
-            return new RayHit(hitPoint, normal, ray.Direction, Material);
+
+            // Establish a local coordinate system
+            Vector3 tangent = normal.Cross(new Vector3(0, 1, 0));
+            if (tangent.LengthSq() < 1e-6)
+            {
+                tangent = normal.Cross(new Vector3(1, 0, 0));
+            }
+            tangent = tangent.Normalized();
+            Vector3 bitangent = normal.Cross(tangent).Normalized();
+
+            // Project the intersection point onto the plane, and obtain u and v.
+            double u = (hitPoint - center).Dot(tangent);
+            double v = (hitPoint - center).Dot(bitangent);
+
+            double uWrapped = u - Math.Floor(u);
+            double vWrapped = v - Math.Floor(v);
+            TextureCoord texCoord = new TextureCoord((float)uWrapped, (float)vWrapped);
+
+            return new RayHit(hitPoint, normal, ray.Direction, Material, texCoord);
         }
 
         /// <summary>
