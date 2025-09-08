@@ -14,11 +14,21 @@ namespace RayTracer
         private const int maxTrianglesPerLeaf = 8;
         private const int maxDepth = 32;
 
+        /// <summary>
+        /// Constructs a BVH node from a list of triangles
+        /// </summary>
+        /// <param name="tris">List of triangles to build the BVH from</param>
+        /// <param name="depth">Current recursion depth (default: 0)</param>
         public BVHNode(List<Triangle> tris, int depth = 0)
         {
             BuildNode(tris, depth);
         }
 
+        /// <summary>
+        /// Recursively builds the BVH node by calculating bounding boxes and partitioning triangles
+        /// </summary>
+        /// <param name="tris">List of triangles to process</param>
+        /// <param name="depth">Current recursion depth</param>
         private void BuildNode(List<Triangle> tris, int depth)
         {
             if (tris == null || tris.Count == 0)
@@ -85,6 +95,16 @@ namespace RayTracer
             Triangles = null;
         }
 
+        /// <summary>
+        /// Updates the minimum and maximum coordinates based on a vertex position
+        /// </summary>
+        /// <param name="v">Vertex position to consider</param>
+        /// <param name="minX">Reference to current minimum X coordinate</param>
+        /// <param name="minY">Reference to current minimum Y coordinate</param>
+        /// <param name="minZ">Reference to current minimum Z coordinate</param>
+        /// <param name="maxX">Reference to current maximum X coordinate</param>
+        /// <param name="maxY">Reference to current maximum Y coordinate</param>
+        /// <param name="maxZ">Reference to current maximum Z coordinate</param>
         private static void UpdateMinMax(Vector3 v, ref double minX, ref double minY, ref double minZ, ref double maxX, ref double maxY, ref double maxZ)
         {
             if (v.X < minX) minX = v.X;
@@ -95,6 +115,11 @@ namespace RayTracer
             if (v.Z > maxZ) maxZ = v.Z;
         }
 
+        /// <summary>
+        /// Tests for intersection between a ray and the axis-aligned bounding box (AABB)
+        /// </summary>
+        /// <param name="ray">Ray to test for intersection</param>
+        /// <returns>True if the ray intersects the AABB, false otherwise</returns>
         public bool IntersectAABB(Ray ray)
         {
             double tmin = double.NegativeInfinity;
@@ -151,6 +176,12 @@ namespace RayTracer
             return tmax >= 0;
         }
 
+        /// <summary>
+        /// Given a ray, determine whether the ray hits any triangle in the BVH
+        /// and if so, return the closest hit data (otherwise null).
+        /// </summary>
+        /// <param name="ray">Ray data</param>
+        /// <returns>Ray hit data for the closest intersection, or null if no hit</returns>
         public RayHit Intersect(Ray ray)
         {
             if (!IntersectAABB(ray)) return null;
